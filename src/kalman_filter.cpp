@@ -43,22 +43,19 @@ void KalmanFilter::Update(const VectorXd &z) {
 
 void KalmanFilter::UpdateEKF(const VectorXd &z) {
   // Recover state parameters
-  float px = x_[0];
-  float py = x_[1];
-  float vx = x_[2];
-  float vy = x_[3];
-
-  // Avoid division by zero
-  if (px < 0.0001) {
-    px = 0.0001;
-  }
-  if (py < 0.0001) {
-    py = 0.0001;
-  }
+  float px = x_(0);
+  float py = x_(1);
+  float vx = x_(2);
+  float vy = x_(3);
 
   float rho = sqrt(px*px + py*py);
   float theta = atan2(py, px);
-  float rho_dot = (px*vx + py*vy) / rho;
+  float rho_dot;
+  if (fabs(rho) < 0.0001) {
+    rho_dot = 0;
+  } else {
+    rho_dot = (px*vx + py*vy) / rho;
+  }
 
   VectorXd h = VectorXd(3);
   h << rho, theta, rho_dot;
